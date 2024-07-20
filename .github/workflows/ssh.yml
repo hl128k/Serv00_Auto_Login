@@ -27,4 +27,9 @@ jobs:
       - name: Run SSH connection script
         env:
           ACCOUNTS: ${{ secrets.ACCOUNTS_JSON }}
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+          WEBHOOK_HEADERS: ${{ secrets.WEBHOOK_HEADERS }}
+          WEBHOOK_DATA: ${{ secrets.WEBHOOK_DATA }}
+          WEBHOOK_MESSAGE: ${{ secrets.WEBHOOK_MESSAGE }}
+          SEND_TYPE: ${{ secrets.SEND_TYPE }}
         run: python ssh.py

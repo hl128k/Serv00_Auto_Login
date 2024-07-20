@@ -8,7 +8,27 @@ function formatToISO(date) {
 async function delayTime(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+async function sendWebhookRequest(message) {
+    const url = process.env.WEBHOOK_URL;
+    const headers = JSON.parse(process.env.WEBHOOK_HEADERS);
+    const data = JSON.parse(process.env.WEBHOOK_DATA);
+    data[process.env.WEBHOOK_MESSAGE] = message;
 
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            const responseText = await response.text();
+            console.log(`发送消息到WebHook失败: ${responseText}`);
+        }
+    } catch (error) {
+        console.log(`发送消息到WebHook时出错: ${error}`);
+    }
+}
 (async () => {
   // 读取 accounts.json 中的 JSON 字符串
   const accountsJson = fs.readFileSync('accounts.json', 'utf-8');
@@ -53,20 +73,32 @@ async function delayTime(ms) {
         const logoutButton = document.querySelector('a[href="/logout/"]');
         return logoutButton !== null;
       });
-
+      const sendType =process.env.SEND_TYPE;
       if (isLoggedIn) {
         // 获取当前的UTC时间和北京时间
         const nowUtc = formatToISO(new Date());// UTC时间
         const nowBeijing = formatToISO(new Date(new Date().getTime() + 8 * 60 * 60 * 1000)); // 北京时间东8区，用算术来搞
-        if(bark) await fetch(`https://api.day.app/${bark}/Serv00自动登录/账号 ${username} 于北京时间 ${nowBeijing}（UTC时间 ${nowUtc}）登录成功！`);
+        if(sendType == "bark" ){
+            if(bark) await fetch(`https://api.day.app/${bark}/Serv00自动登录/账号 ${username} 于北京时间 ${nowBeijing}（UTC时间 ${nowUtc}）登录成功！`);
         console.log(`账号 ${username} 于北京时间 ${nowBeijing}（UTC时间 ${nowUtc}）登录成功！`);
+        }else{
+            await sendWebhookRequest(`Serv00自动登录账号 ${username} 于北京时间 ${nowBeijing}（UTC时间 ${nowUtc}）登录成功！`)
+        }
       } else {
-        if(bark) await fetch(`https://api.day.app/${bark}/Serv00自动登录/账号 ${username} 登录失败，请检查账号和密码是否正确。`);
-        console.error(`账号 ${username} 登录失败，请检查账号和密码是否正确。`);
+        if(sendType == "bark" ){
+            if(bark) await fetch(`https://api.day.app/${bark}/Serv00自动登录/账号 ${username} 登录失败，请检查账号和密码是否正确。`);
+            console.error(`账号 ${username} 登录失败，请检查账号和密码是否正确。`);
+        }else{
+            await sendWebhookRequest(`Serv00自动登录账号 ${username} 登录失败，请检查账号和密码是否正确。`)
+        }
       }
     } catch (error) {
-      if(bark) await fetch(`https://api.day.app/${bark}/Serv00自动登录/账号 ${username} 登录时出现错误: ${error}`);
-      console.error(`账号 ${username} 登录时出现错误: ${error}`);
+        if(sendType == "bark" ){
+            if(bark) await fetch(`https://api.day.app/${bark}/Serv00自动登录/账号 ${username} 登录时出现错误: ${error}`);
+            console.error(`账号 ${username} 登录时出现错误: ${error}`);
+        }else{
+            await sendWebhookRequest(`Serv00自动登录账号 ${username} 登录时出现错误: ${error}`)
+        }
     } finally {
       // 关闭页面和浏览器
       await page.close();
