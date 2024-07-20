@@ -33,6 +33,7 @@ async function sendWebhookRequest(message) {
   // 读取 accounts.json 中的 JSON 字符串
   const accountsJson = fs.readFileSync('accounts.json', 'utf-8');
   const accounts = JSON.parse(accountsJson);
+  const sendType =process.env.SEND_TYPE;
 
   for (const account of accounts) {
     const { username, password, panelnum,bark } = account;
@@ -73,7 +74,6 @@ async function sendWebhookRequest(message) {
         const logoutButton = document.querySelector('a[href="/logout/"]');
         return logoutButton !== null;
       });
-      const sendType =process.env.SEND_TYPE;
       if (isLoggedIn) {
         // 获取当前的UTC时间和北京时间
         const nowUtc = formatToISO(new Date());// UTC时间
