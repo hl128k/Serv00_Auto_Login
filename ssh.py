@@ -44,17 +44,6 @@ def ssh_connect(host, username, password, bark):
 
 
 def send_webhook_request(message):
-    if not WEBHOOK_DATA:
-        raise ValueError("WEBHOOK_DATA为空或为None")
-
-    print("WEBHOOK_DATA:", WEBHOOK_DATA)
-
-    try:
-        data = json.loads(WEBHOOK_DATA)
-    except json.JSONDecodeError as e:
-        print(f"JSON解码错误: {e}")
-        print(f"错误位置: line {e.lineno} column {e.colno} (char {e.pos})")
-        raise
     url = WEBHOOK_URL
     headers = json.loads(WEBHOOK_HEADERS)
     data = json.loads(WEBHOOK_DATA)
