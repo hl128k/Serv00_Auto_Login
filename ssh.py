@@ -44,6 +44,9 @@ def ssh_connect(host, username, password, bark):
 
 
 def send_webhook_request(message):
+    print("WEBHOOK_DATA:", WEBHOOK_DATA)
+    print("WEBHOOK_HEADERS:", WEBHOOK_HEADERS)
+    print("WEBHOOK_MESSAGE:", WEBHOOK_MESSAGE)
     url = WEBHOOK_URL
     headers = json.loads(WEBHOOK_HEADERS)
     data = json.loads(WEBHOOK_DATA)
